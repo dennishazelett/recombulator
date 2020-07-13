@@ -1,0 +1,32 @@
+---
+title: "Recombulator"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+setwd('~/repos/recombulator/')
+source('recombTools.R')
+```
+
+Drosophilists! I recently (re-) discovered an old project from my days as a postdoc. In a nutshell, I cobbled together sources of data on recombination rates in the _Drosophila_ genome to create a calculator capable of determining how many progeny one must screen to obtain some minimum number of crossover events between two loci with predetermined confidence.
+
+In most cases, if you know the gene symbols, you can run this:
+
+```{r}
+graph_result("CG10814", "CG6191")
+```
+
+Example for two genes on different chromosomes:
+
+```{r}
+graph_result("Bap", "tin", confidence = 0.99, nsuccesses = 5)
+```
+
+Example recombining a deficiency with another marker (this works for any set of two GRanges objects):
+
+```{r message=FALSE, warning=FALSE}
+white_gene <- fly_genes[fly_genes$mcols.gene_symbol=="w",]
+deficiency1 <- GRanges(seqnames = "X", ranges = IRanges(2550000, 2575000))
+prob <- predictRF(white_gene, deficiency1)
+number_of_progeny(crossover_prob=prob, num_events = 3, confidence = 0.60)
+```
